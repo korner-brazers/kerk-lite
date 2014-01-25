@@ -1,0 +1,10 @@
+.scrollbarContent {position: relative;}
+.scrollbarContent .viewport { overflow: hidden; position: absolute; left: 0; top: 0; }
+.scrollbarContent .overview { list-style: none; position: absolute; left: 0; top: 0; }
+.scrollbarContent .thumb .end,
+.scrollbarContent .thumb { background-color: #4b4b4b; }
+.scrollbarContent .scrollbar { position: relative; float: right; width: 3px; }
+.scrollbarContent .track { background-color: #121212; height: 100%; width:3px; position: relative; padding: 0; }
+.scrollbarContent .thumb { height: 20px; width: 3px; cursor: pointer; overflow: hidden; position: absolute; top: 0; }
+.scrollbarContent .thumb .end { overflow: hidden; height: 5px; width: 3px; }
+.scrollbarContent .disable{ display: none; }

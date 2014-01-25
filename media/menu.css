@@ -1,0 +1,76 @@
+body{
+    background: #000;
+    font-size: 12px !important;
+    font-family: Arial !important;
+    color: #DFDFDF;
+    -moz-user-select: -moz-none;
+    -o-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+h3{
+    font-family: Arial !important;
+}
+h1,h2,h3,h4,h5,h6{
+    font-weight: normal;
+}
+p{
+    font-size: 13px !important;
+}
+a{
+    color: #fff;
+}
+.hide{
+    display: none;
+}
+
+#fullscreen,
+#fps{
+    background: url(/images/game/fullscreen.png) no-repeat 0 0;
+    width: 21px;
+    height: 16px;
+    cursor: pointer;
+    z-index: 900;
+    top: 10px;
+    right: 10px;
+    text-align: center;
+}
+#fps{
+    background: none;
+    right: 41px;
+    opacity: 0.23;
+    cursor: default;
+    line-height: 17px;
+}
+.iconsGame{
+    display: none;
+    z-index: 1000
+}
+.copyr{
+    z-index: 1000;
+    position: absolute;
+    left: 50%;
+    bottom: 15px;
+    width: 210px;
+    height: 59px;
+    margin: 0 0 0 -105px;
+    background: url(/images/game/copyr.png) no-repeat 0 0;
+    display: none;
+}
+.menuLoad,
+.loadingGameProgress{
+    z-index: 1000;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 16px;
+    height: 16px;
+    background: url(/images/game/conect.gif) no-repeat 0 0;
+    display: none;
+}
+.menuLoad{
+    margin: -8px 0 0 -8px;
+    right: 50%;
+    bottom: 50%;
+}
