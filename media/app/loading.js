@@ -58,7 +58,12 @@ kerk.loading.prototype = {
         var scope = this;
         
         $.get( '/data/map/zone/'+kerk.option.map_id+'.base?'+random(9999,99999), function(j) {
-            dataCache.zoneLoading = JSON.parse(j);
+            try{
+                dataCache.zoneLoading = JSON.parse(j);
+            }
+            catch(e){
+                
+            }
             
             scope.callback();
         }).fail(function() {
