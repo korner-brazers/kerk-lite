@@ -10,6 +10,7 @@
 <script type="text/javascript" src="/media/js/jquery.easing.min.js"></script>
 <script type="text/javascript" src="/media/scroll/jquery.mousewheel.min.js"></script>
 <script type="text/javascript" src="/media/scroll/jquery.mCustomScrollbar.min.js"></script>
+<script type="text/javascript" src="/media/js/Box2dWeb-2.1.a.3.min.js"></script>
 <script type="text/javascript" src="/media/tween.js"></script>
 
 <script src="/media/pixi/pixi.dev.js"></script>
@@ -27,7 +28,10 @@
 <script src="/media/app/loading.js<?=$rcache?>"></script>
 <script src="/media/app/player.js<?=$rcache?>"></script>
 <script src="/media/app/animation.js<?=$rcache?>"></script>
+<script src="/media/app/animationObject.js<?=$rcache?>"></script>
 <script src="/media/app/box.js<?=$rcache?>"></script>
+<script src="/media/app/box2D.js<?=$rcache?>"></script>
+<script src="/media/app/area.js<?=$rcache?>"></script>
 <script src="/media/app/sprite.js<?=$rcache?>"></script>
 <script src="/media/app/weapon.js<?=$rcache?>"></script>
 <script src="/media/app/shell.js<?=$rcache?>"></script>
@@ -42,10 +46,15 @@
 <script src="/media/app/fx.js<?=$rcache?>"></script>
 <script src="/media/app/sound.js<?=$rcache?>"></script>
 <script src="/media/app/soundPack.js<?=$rcache?>"></script>
+<script src="/media/app/font.js<?=$rcache?>"></script>
 
 <link rel="stylesheet" href="/plugins/css/tools.css" type="text/css" />
 <link rel="stylesheet" href="/media/menu.css<?=$rcache?>" type="text/css" />
 <link rel="stylesheet" href="/media/scroll/jquery.mCustomScrollbar.css" type="text/css" />
+
+
+<script src="/data/data.js<?=$rcache?>"></script>
+<script src="/data/scripts.js<?=$rcache?>"></script>
 
 <script>
 /** Наши данные **/
@@ -54,10 +63,9 @@ var viewer_id  = <?=$game['viewer_id']?>; //vk viewer_id
 var user_id    = <?=$game['user_id']?>;   //db user id
 var Profile    = <?=$game['user']?>;
 var LoadMap    = {};
-var LoadObj    = <?=$game['obj']?>;
 var auth_key   = '<?=$game['auth_key']?>';
 var uhash      = '<?=$game['uhash']?>';
-var LoadAllMap = <?=$game['maps']?>;
+var LoadAllMap = LoadObj.maps;
 var getTestMap = '<?=$_GET['map']?>';
 
 /** Основные настройки **/
@@ -95,6 +103,7 @@ var clock      = new Clock();
     <div class="conteiner t_p_r" id="Game" style="width: 800px; margin: 0 auto; height: 500px;">
         <!--<img src="/images/game/distore_1.jpg" id="bgMenu" class="t_p_a t_width t_height t_top t_left" style="display: none;" />-->
         <div id="Pixi" class="t_p_a t_left t_top" style="display: none;"></div>
+        <canvas id="canvas" width="800" height="500"></canvas>
         
         <div id="fullscreen" class="t_p_a iconsGame" onclick="menu.fullscreen()"></div>
         <div id="fps" class="t_p_a iconsGame"></div>
@@ -106,22 +115,26 @@ var clock      = new Clock();
         
     </div>
     
-<script type="text/javascript" src="/media/function.js<?=$rcache?>"></script>
-<script type="text/javascript" src="/media/menu.js<?=$rcache?>"></script>
+<script type="text/javascript" src="media/function.js<?=$rcache?>"></script>
+<script type="text/javascript" src="media/menu.js<?=$rcache?>"></script>
 
 <script type="text/javascript">
 
-/** Создаем нашу игру **/
-kerk.createGame();
-
-/** Если эта тестовая карта **/
-if(getTestMap){
-    menu.testMap({
-        map_id: getTestMap,
-        object_id: '<?=$_GET['unitid']?>',
-    })
+if(window.location.protocol.substr(0, 4) === "file"){
+	alert("Игра не будет работать, пока вы не загрузите их на сайт!");
 }
-else menu.start();
+else{
+    /** Создаем нашу игру **/
+    kerk.createGame();
+    
+    /** Если эта тестовая карта **/
+    if(getTestMap){
+        menu.testMap({
+            map_id: getTestMap
+        })
+    }
+    else menu.start();
+}
 
 
 /***///FULLSCREEN MODE///***/
@@ -140,7 +153,6 @@ BigScreen.onexit = function(){
 /***///SCRIPTS///***/
 /** Дополнительные скрипты для обьектов **/
 
-<?=$game['scripts']?>
 </script>
 </body>
 </html>

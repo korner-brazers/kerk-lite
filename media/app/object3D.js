@@ -1,16 +1,16 @@
 kerk.object3D = function(option){
     kerk.add(this);
     
-    this.name   = option.name;
-    this.option = option;
-    this.object = LoadObj.object3D[option.object];
-    this.add3D  = [];
+    this.name       = option.name;
+    this.option     = option;
+    this.gameObject = LoadObj.object3D[option.object];
+    this.add3D      = [];
             
-    if(this.object){
-        for(var f = 0; f < this.object.frames.length; f++){
-            for(g = 0; g < this.object.frames[f].floors; g++){
-                var sprite  = new PIXI.Sprite.fromImage(this.object.frames[f].img);
-                var frame   = this.object.frames[f];
+    if(this.gameObject){
+        for(var f = 0; f < this.gameObject.frames.length; f++){
+            for(g = 0; g < this.gameObject.frames[f].floors; g++){
+                var sprite  = new PIXI.Sprite.fromImage(this.gameObject.frames[f].img);
+                var frame   = this.gameObject.frames[f];
             
                 sprite.anchor.x = option.anchorX;
                 sprite.anchor.y = option.anchorY;
@@ -19,14 +19,14 @@ kerk.object3D = function(option){
                     floor: frame.floor + g,
                     x: option.x,
                     y: option.y,
-                    factor: this.object.factor,
-                    lens: this.object.lens
+                    factor: this.gameObject.factor,
+                    lens: this.gameObject.lens
                 };
                 
                 sprite.alpha    = frame.opacity;
                 sprite.scale    = {
-                    x: frame.scaleX + (frame.scaleX - option.scaleX),
-                    y: frame.scaleY + (frame.scaleY - option.scaleY)
+                    x: frame.scaleX + (frame.scaleX - option.scaleX) + ((frame.floor + g)*(frame.scaleFactor || 0)),
+                    y: frame.scaleY + (frame.scaleY - option.scaleY) + ((frame.floor + g)*(frame.scaleFactor || 0))
                 };
                 sprite.rotation = option.rotation + frame.rotation;
                 

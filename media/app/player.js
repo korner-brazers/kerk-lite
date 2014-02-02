@@ -59,15 +59,15 @@ kerk.player = function(option){
     kerk.scriptsSetAction('startAction',this.scripts);
 }
 kerk.player.prototype = {
-    destroy: function(){
-        if(this.animation) this.animation.destroy();
-        kerk.scriptsSetAction('destroyAction',this.scripts)
-        kerk.remove(this);
-    },
     setPosition: function(position){
         this.position.set(position);
     },
     update: function(){
         kerk.scriptsSetAction('updateAction',this.scripts)
+    },
+    destroy: function(){
+        if(this.animation) this.animation.destroy();
+        kerk.scriptsSetAction('destroyAction',this.scripts)
+        kerk.remove(this);
     }
 }

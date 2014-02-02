@@ -158,7 +158,6 @@ class game extends db{
             $this->gameVars['viewer_id']  = intval($this->viewer_id);
             $this->gameVars['obj']        = json_encode($this->getObj());
             $this->gameVars['auth_key']   = $this->auth_key;
-            $this->gameVars['scripts']    = $this->getScripts();
             $this->gameVars['vkapp']      = intval($this->vkapp);
             
             if($this->vkapp){
@@ -175,88 +174,11 @@ class game extends db{
             
             $game = $this->gameVars;
             
-            include DIR.'/game.php';
+            if(defined('NODE')) return get_include_contents(DIR.'/game.php',$game);
+            else include DIR.'/game.php';
         }
         
         return ' ';
-    }
-    private function scriptToString($name){
-        $str = "scripts.".$name." = function (object){\n";
-        
-        $exists = file_get_contents(DATA.'/scripts/'.$name.'.js');
-        
-        if($exists) $str .= $exists."\n";
-        
-        $str .= "}\n";
-        
-        return $str;
-    }
-    private function parseScript($object){
-        $str = '';
-        
-        foreach($object as $script){
-            $str .= $this->scriptToString($script['name']);
-        }
-        
-        return $str;
-    }
-    private function getScripts(){
-        $load = $this->getFile(DATAKEY.'/scripts.data.json');
-        $str  = "var scripts = {};\n";
-        
-        
-        $attachedScripts = [];
-        
-        foreach($load['object'] as $object){
-            foreach($object['objects'] as $atachID=>$atachArr){
-                if(!$attachedScripts[$atachID]) $attachedScripts[$atachID] = [];
-                
-                $attachedScripts[$atachID][] = $object['name'];
-            }
-        }
-        
-        foreach($load['maps'] as $mapID=>$map){
-            foreach($map as $object){
-                if($object['sys']){
-                    if(!$attachedScripts[$mapID]) $attachedScripts[$mapID] = [];
-                    
-                    $attachedScripts[$mapID][] = $object['name'];
-                }
-                else{
-                    foreach($object['objects'] as $atachID=>$atachArr){
-                        if(!$attachedScripts[$atachID]) $attachedScripts[$atachID] = [];
-                        
-                        $attachedScripts[$atachID][] = $object['name'];
-                    }
-                }
-            }
-        }
-        
-        foreach($load['global'] as $object){
-            if(!$attachedScripts[$object['name']]) $attachedScripts[$object['name']] = [];
-            
-            $attachedScripts[$object['name']][] = $object['name'];
-            
-            if($object['runing']){
-                if(!$attachedScripts['runingGlobal']) $attachedScripts['runingGlobal'] = [];
-                
-                $attachedScripts['runingGlobal'][] = $object['name'];
-            } 
-        }
-
-        $str .= "var attachedScripts = ".json_encode($attachedScripts).";\n";
-        
-        $str .= $this->parseScript($load['object']);
-        
-        foreach($load['maps'] as $objects){
-            $str .= $this->parseScript($objects);
-        }
-        
-        foreach($load['global'] as $object){
-            $str .= $this->scriptToString($object['name']);
-        }
-        
-        return $str;
     }
     
     private function getError($n){
@@ -282,7 +204,9 @@ class game extends db{
 $game = new game();
 $data = $game->$do();
 
-if(is_array($data))  echo json_encode($data);
-elseif(empty($data)) echo json_encode([]);
-else                 echo $data;
+if(!defined('NODE')){
+    if(is_array($data))  echo json_encode($data);
+    elseif(empty($data)) echo json_encode([]);
+    else                 echo $data;
+}
 ?>

@@ -36,14 +36,6 @@ var menu = new function() {
                 map_id: option.map_id,
                 load: function(){
                     
-                    /*
-                    kerk.addPlayer({
-                        object_id: option.object_id,
-                        unitid: unitid,
-                        position: {x: settings.screen[0]/2,y: settings.screen[1]/2}
-                    });
-                    */
-                    
                     menu.toggleGame('game');
                     
         			$('.iconsGame').show();

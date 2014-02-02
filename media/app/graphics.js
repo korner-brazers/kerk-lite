@@ -55,7 +55,8 @@ kerk.graphics = function(){
             
             kerk.makeObject({
                 position: {x:obj.x,y:obj.y},
-                object_id: obj.objectCreate
+                object_id: obj.objectCreate,
+                myPlayer: obj.myPlayer
             })
         }
     }
@@ -81,6 +82,18 @@ kerk.graphics = function(){
                 aud.play();
             }
         }
+    }
+    
+    if(LoadMap.wall){
+        $.each(LoadMap.wall,function(i,o){
+            if(o.points.length > 2) kerk.areas.push(new kerk.area(o));
+        })
+    }
+    
+    if(LoadMap.ground){
+        $.each(LoadMap.ground,function(i,o){
+            if(o.points.length > 2) kerk.areas.push(new kerk.area(o));
+        })
     }
 }
 kerk.graphics.prototype = {

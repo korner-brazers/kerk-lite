@@ -4,60 +4,60 @@ kerk.shell = function(option){
     this.object    = option.object;
     this.active    = false;
     this.exists    = false;
-    this.bullet    = LoadObj.bullet[option.id];
-    this.unitid    = option.unitid;
-    this.weapon_id = option.weapon_id;
-    this.solid     = option.solid;
-    this.bullet_id = option.id;
+    this.gameObject    = LoadObj.bullet[option.id];
+    this.unitid        = option.unitid;
+    this.weapon_id     = option.weapon_id;
+    this.solid         = option.solid;
+    this.gameObject_id = option.id;
     
     this.timer     = this.stop = 0;
     this.sound     = {};
     
-    if(this.bullet){
+    if(this.gameObject){
         this.exists = true;
         
         this.sound.shot = new kerk.sound({
-            src: this.bullet.soundShot,
+            src: this.gameObject.soundShot,
             id: this.unitid,
-            radius: this.bullet.soundDistance
+            radius: this.gameObject.soundDistance
         })
         
         this.sound.blur = new kerk.sound({
-            src: this.bullet.soundShotBlur,
+            src: this.gameObject.soundShotBlur,
             id: this.unitid,
-            radius: this.bullet.soundDistance,
-            radiusBlur: this.bullet.soundBlurDistance
+            radius: this.gameObject.soundDistance,
+            radiusBlur: this.gameObject.soundBlurDistance
         })
         
         this.sound.loop = new kerk.sound({
-            src: this.bullet.soundShotLoop,
+            src: this.gameObject.soundShotLoop,
             id: this.unitid,
             loop: 1,
             position: this.object.position,
-            radius: this.bullet.soundDistance,
+            radius: this.gameObject.soundDistance,
         })
         
         this.sound.loopBlur = new kerk.sound({
-            src: this.bullet.soundShotBlurLoop,
+            src: this.gameObject.soundShotBlurLoop,
             id: this.unitid,
             loop: 1,
             position: this.object.position,
-            radius: this.bullet.soundDistance,
-            radiusBlur: this.bullet.soundBlurDistance
+            radius: this.gameObject.soundDistance,
+            radiusBlur: this.gameObject.soundBlurDistance
         })
         
         this.sound.end = new kerk.sound({
-            src: this.bullet.soundShotLoopEnd,
+            src: this.gameObject.soundShotLoopEnd,
             id: this.unitid,
-            radius: this.bullet.soundDistance,
+            radius: this.gameObject.soundDistance,
             position: this.object.position,
         })
         
         this.sound.endBlur = new kerk.sound({
-            src: this.bullet.soundShotBlurLoopEnd,
+            src: this.gameObject.soundShotBlurLoopEnd,
             id: this.unitid,
-            radius: this.bullet.soundDistance,
-            radiusBlur: this.bullet.soundBlurDistance,
+            radius: this.gameObject.soundDistance,
+            radiusBlur: this.gameObject.soundBlurDistance,
             position: this.object.position,
         })
     } 
@@ -75,7 +75,7 @@ kerk.shell.prototype = {
         if(this.exists){
             this.timer += 1000*delta;
             
-            if(this.active && this.timer > this.bullet.delay){
+            if(this.active && this.timer > this.gameObject.delay){
                 
                 var coller    = kerk.getController(this.unitid);
                 var pointShot = {
@@ -88,17 +88,17 @@ kerk.shell.prototype = {
                 new kerk.bullet({
                     pointStart: pointShot,
                     pointEnd: pointEnd,
-                    bullet: this.bullet,
+                    bullet: this.gameObject,
                     unitid: this.unitid,
                     weapon_id: this.weapon_id,
-                    id: this.bullet_id
+                    id: this.gameObject_id
                 })
                 
                 this.sound.shot.setPosition(pointShot).play(true);
                 this.sound.blur.setPosition(pointShot).play(true);
                 
                 new kerk.fx({
-                    id: this.bullet.shotFx,
+                    id: this.gameObject.shotFx,
                     position: pointShot,
                     angle: ToAngleObject(pointShot,pointEnd),
                     unitid: this.unitid,
@@ -110,7 +110,7 @@ kerk.shell.prototype = {
                 this.stop  = 1;
             }
             
-            if(this.stop && this.timer < this.bullet.soundMinTime){
+            if(this.stop && this.timer < this.gameObject.soundMinTime){
                 this.sound.loop.play();
                 this.sound.loopBlur.play();
             }

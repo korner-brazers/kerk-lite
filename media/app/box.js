@@ -16,10 +16,7 @@ kerk.box = function(option){
     this.boxImg  = [];
     
     if(this.showBox){
-        for(var i in this.points){
-            this.boxImg[i] = kerk.addObject(PIXI.Sprite.fromImage('/images/fx/pr.png'),'players');
-            this.boxImg[i].anchor.x = this.boxImg[i].anchor.y = 0.5;
-        }
+        for(var i in this.points) this.boxImg[i] = kerk.createSprite({img:'/images/fx/pr.png'});
     }
 }
 kerk.box.prototype = {
@@ -69,8 +66,6 @@ kerk.box.prototype = {
         }
         
         if(this.callback){
-            var index = kerk.boxDetect.indexOf(this);
-            
             for(var i in kerk.boxDetect){
                 var box = kerk.boxDetect[i];
                 
@@ -79,8 +74,25 @@ kerk.box.prototype = {
                     break;
                 }
             }
-            
         }
+    },
+    sign: function(p1, p2, p3){
+        return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+    },
+    PointInTriangle: function(pt, v1, v2, v3){
+        var b1, b2, b3;
+        
+        b1 = this.sign(pt, v1, v2) < 0;
+        b2 = this.sign(pt, v2, v3) < 0;
+        b3 = this.sign(pt, v3, v1) < 0;
+        
+        return ((b1 == b2) && (b2 == b3));
+    },
+    intersectPoint: function(point){
+        var b1 = this.PointInTriangle(point,this.points[0],this.points[1],this.points[2]);
+        var b2 = this.PointInTriangle(point,this.points[0],this.points[3],this.points[2]);
+        
+        return b1 || b2;
     },
     destroy: function(){
         if(this.showBox){

@@ -1,10 +1,10 @@
 kerk.fx = function(option){
     kerk.add(this);
     
-    this.option    = option;
-    this.fx        = LoadObj.fx[option.id];
-    this.position  = option.position;
-    this.particles = [];
+    this.option      = option;
+    this.gameObject  = LoadObj.fx[option.id];
+    this.position    = option.position;
+    this.particles   = [];
     this.autoDestroy = option.autoDestroy !== undefined ? option.autoDestroy : true;
     this.layer     = option.layer || 'players';
     this.angle     = option.angle;
@@ -14,23 +14,27 @@ kerk.fx = function(option){
     this.yVariance = option.yVariance/2;
 
     
-    if(this.fx){
+    if(this.gameObject){
         this.exists = this.active = true;
         
-        for(var i in this.fx.particles) this.addParticles(this.fx.particles[i]);
+        for(var i in this.gameObject.particles) this.addParticles(this.gameObject.particles[i]);
         
         new kerk.soundPack({
-            id: this.fx.soundPack,
+            id: this.gameObject.soundPack,
             position: this.position,
             unitid: option.unitid
         })
         
         kerk.cameraVibration({
             position: this.position,
-            radius: this.fx.camRadius,
-            force: this.fx.camForce
+            radius: this.gameObject.camRadius,
+            force: this.gameObject.camForce
         })
     }
+    
+    this.scripts = kerk.scriptsCreate(option.id,this);
+    
+    kerk.scriptsSetAction('startAction',this.scripts);
 }
 kerk.fx.prototype = {
     setDie: function(){
@@ -73,7 +77,7 @@ kerk.fx.prototype = {
                 particle.obj.position.x = position.x;
                 particle.obj.position.y = position.y;
                 
-                particle.obj.scale.x  = particle.obj.scale.y = particle.scale;
+                particle.obj.scale.x  = particle.obj.scale.y = particle.scale+(particle.height*(a.scaleFactor || 0.05));
                 particle.obj.alpha    = particle.opacity;
                 particle.obj.rotation = particle.rotation;
             }
@@ -96,9 +100,12 @@ kerk.fx.prototype = {
             }
         }
         else if(this.autoDestroy) this.destroy();
+        
+        kerk.scriptsSetAction('updateAction',this.scripts)
     },
     destroy: function(){
         for(var i in this.particles) this.particles[i].destroy();
+        kerk.scriptsSetAction('destroyAction',this.scripts)
         kerk.remove(this);
     }
 }

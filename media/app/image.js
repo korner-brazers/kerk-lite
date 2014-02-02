@@ -1,9 +1,9 @@
 kerk.image = function(option){
     kerk.add(this);
     
-    this.name   = option.name;
-    this.option = option;
-    this.sprite = new PIXI.Sprite.fromImage(option.src);
+    this.name       = option.name;
+    this.gameObject = option;
+    this.sprite     = new PIXI.Sprite.fromImage(option.src);
 
     this.sprite.anchor.x = option.anchorX;
     this.sprite.anchor.y = option.anchorY;
@@ -21,6 +21,19 @@ kerk.image = function(option){
             object: this.sprite,
             solid: true
         })
+        
+        this.body = new kerk.box2D({
+            type: 'box',
+            width: this.sprite.width,
+            height: this.sprite.height,
+            position: {
+                x: this.gameObject.x,
+                y: this.gameObject.y
+            },
+            dynamic: this.gameObject.dynamic,
+            userData: 'image'
+        })
+        
     }
     
     this.scripts = kerk.scriptsCreate(option.id,this);
@@ -29,17 +42,30 @@ kerk.image = function(option){
 }
 kerk.image.prototype = {
     update: function(){
-        var layer   = kerk.layers[this.sprite.userData.layerUse],
-            x       = this.option.x + layer.position.x,
-            y       = this.option.y + layer.position.y,
-            fx3D    = kerk.Fx3D(x,y,this.option.floor,this.option.factor);
-            
-            this.sprite.position.x = fx3D.x - layer.position.x;
-            this.sprite.position.y = fx3D.y - layer.position.y;
-            
-            if(this.option.lens) this.sprite.visible = kerk.isVisible(x,y,0,0).visible;
-            
-            kerk.scriptsSetAction('updateAction',this.scripts)
+        var layer = kerk.layers[this.sprite.userData.layerUse];
+        
+        if(this.body){
+            this.position    = this.body.GetPosition();
+            this.position.x += layer.position.x;
+            this.position.y += layer.position.y;
+        }
+        else{
+            this.position = {
+                x: this.gameObject.x + layer.position.x,
+                y: this.gameObject.y + layer.position.y
+            }
+        }
+        
+        var fx3D = kerk.Fx3D(this.position.x,this.position.y,this.gameObject.floor,this.gameObject.factor);
+        
+        this.sprite.position.x = fx3D.x - layer.position.x;
+        this.sprite.position.y = fx3D.y - layer.position.y;
+        
+        if(this.body) this.sprite.rotation = this.body.GetAngle();
+        
+        if(this.gameObject.lens) this.sprite.visible = kerk.isVisible(this.position.x,this.position.y,0,0).visible;
+        
+        kerk.scriptsSetAction('updateAction',this.scripts)
     },
     destroy: function(){
         if(this.box) this.box.destroy();

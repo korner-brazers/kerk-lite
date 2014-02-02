@@ -1,12 +1,40 @@
 var delta      = 0, //обычныя дельта
     focusDelta = 0; //обновляется если вкладка браузера в фокусе
 
+
+var b2Vec2 = Box2D.Common.Math.b2Vec2
+,	b2BodyDef = Box2D.Dynamics.b2BodyDef
+,	b2Body = Box2D.Dynamics.b2Body
+,	b2FixtureDef = Box2D.Dynamics.b2FixtureDef
+,	b2Fixture = Box2D.Dynamics.b2Fixture
+,	b2World = Box2D.Dynamics.b2World
+,	b2MassData = Box2D.Collision.Shapes.b2MassData
+,	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
+,	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
+,	b2DebugDraw = Box2D.Dynamics.b2DebugDraw;
+
+
+var fixDef             = new b2FixtureDef;
+    fixDef.density     = 1.0;
+    fixDef.friction    = 0.5;
+    fixDef.restitution = 0.2;
+
+var bodyDef    = new b2BodyDef;
+var world      = new b2World(new b2Vec2(0, 30),true);
+var b2listener = new Box2D.Dynamics.b2ContactListener;
+
+
+var debugDraw;
+        
+
 var kerk = new function(){
     this.renderer,this.scene,this.container,this.stats,this.layers;
     
-    this.objects   = [];
-    this.boxDetect = [];
-    this.players   = {};
+    this.objects      = [];
+    this.boxDetect    = [];
+    this.box2dObjects = [];
+    this.areas        = [];
+    this.players      = {};
     this.controllers  = {};
     this.myColler     = {};
     this.focusTab     = 1;
@@ -89,6 +117,12 @@ var kerk = new function(){
         this.scriptsSetAction('updateAction',this.globalScripts);
         this.scriptsSetAction('updateAction',this.mapScripts);
         
+        world.Step(1/60,10,10);
+        
+        world.ClearForces();
+        
+        if(debugDraw) world.DrawDebugData();
+        
         this.fps();
         this.game();
         this.findCallback = 0;
@@ -129,6 +163,14 @@ var kerk = new function(){
         return object;
     }
     
+    this.createSprite = function(option){
+        var sprite = new PIXI.Sprite.fromImage(option.img);
+            sprite.anchor.x = option.anchorX || 0.5;
+            sprite.anchor.y = option.anchorY || 0.5;
+        
+        return this.addObject(sprite,option.layer || 'players');
+    }
+    
     this.removeObject = function(object){
         if(object.userData.layerUse){
             if(this.layers[object.userData.layerUse]) this.layers[object.userData.layerUse].removeChild(object);
@@ -144,7 +186,7 @@ var kerk = new function(){
     }
     
     this.makeObject = function(option){
-        option.unitid = hash('_ui');
+        option.unitid = option.myPlayer ? unitid : hash('_ui');
         
         return this.addPlayer(option);
     }
@@ -212,7 +254,28 @@ var kerk = new function(){
         
         animate();
         
-
+        b2listener.BeginContact = this.BeginContact;
+        b2listener.EndContact   = this.EndContact
+        
+        world.SetContactListener(b2listener);
+        
+        if(LoadObj.settings.main.debugDraw){
+            debugDraw = new b2DebugDraw();
+            debugDraw.SetSprite(document.getElementById("canvas").getContext("2d"));
+            debugDraw.SetDrawScale(10.0);
+            debugDraw.SetFillAlpha(0.3);
+            debugDraw.SetLineThickness(1.0);
+            debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+            world.SetDebugDraw(debugDraw);  
+        }                      
+    }
+    
+    this.BeginContact = function(contact){
+        for(var i in kerk.box2dObjects) kerk.box2dObjects[i].BeginContact(contact);
+    }
+    
+    this.EndContact = function(contact){
+        for(var i in kerk.box2dObjects) kerk.box2dObjects[i].EndContact(contact);
     }
     
     this.startGame = function(option){
@@ -278,7 +341,8 @@ var kerk = new function(){
     }
     
     this.createMap = function(){
-        this.domObject.show();
+        if(LoadObj.settings.main.debugDraw) this.domObject.hide();
+        else this.domObject.show();
         
         /** Обновляем soundPack так как в кеше хранится все **/
         dataCache.soundPack = {};
@@ -293,53 +357,7 @@ var kerk = new function(){
         
         this.cameraOption.overflow = LoadMap.overflow;
         
-        this.createZone();
-    }
-    
-    this.createZone = function(){
-        dataCache.zoneColors  = {
-            ground: {},
-            wall: {}
-        };
-                
-        dataCache.zoneImgData = {};
-        
-        var baseWall   = converBaseToImage(dataCache.zoneLoading.wallGenerate);
-        var baseGround = converBaseToImage(dataCache.zoneLoading.groundGenerate);
-        
-        var scope = this;
-        
-        /** Фиксим баг для фокса и ящи, фиг его знает, так тормозит что не успевает картинку загрузить)) **/
-        setTimeout(function(){
-            dataCache.zoneImgData.ground = convertImgToData(baseGround)
-            dataCache.zoneImgData.wall   = convertImgToData(baseWall)
-            
-            scope.createColorsZone('ground');
-            scope.createColorsZone('wall');
-        },300)
-    }
-    
-    this.createColorsZone = function(zone){
-        if(LoadMap[zone]){
-            $.each(LoadMap[zone],function(i,o){
-                if(o.points.length > 2) dataCache.zoneColors[zone]['#'+hexGrb(o.color)] = i;
-            })
-        }
-    }
-    
-    this.imageColor = function(x,y,img){
-        var offset = (Math.round(x) - 1 + (Math.round(y) - 1) * LoadMap.w) * 4,
-            rgba   = img.data[offset]+img.data[offset+1]+img.data[offset+2];
-            
-            return rgba;
-    }
-    
-    this.collisionZone = function(zone,x,y){
-        var data  = dataCache.zoneImgData[zone],
-            color = dataCache.zoneColors[zone],
-            rgba  = this.imageColor(x,y,data);
-            
-            if(color['#'+rgba]) return LoadMap[zone][color['#'+rgba]];
+        world.SetGravity(new b2Vec2(0, LoadMap.gravitation !== undefined ?  LoadMap.gravitation : 30));
     }
     
     this.collisionMap = function(position){
@@ -350,12 +368,14 @@ var kerk = new function(){
         position.y = position.y < 10 ? 10 : position.y > maxHeight ? maxHeight : position.y;
     }
     
-    this.detectCollisionZoneRadius = function(position,name,radius){
-        return {
-            detectBottom : kerk.collisionZone(name,position.x,position.y+radius),
-            detectRight  : kerk.collisionZone(name,position.x+radius,position.y),
-            detectLeft   : kerk.collisionZone(name,position.x-radius,position.y),
-            detectTop    : kerk.collisionZone(name,position.x,position.y-radius)
+    this.intersectPoint = function(point){
+        for(var i in this.boxDetect){
+            var box = this.boxDetect[i];
+            
+            if(box.solid && box.intersectPoint(point)){
+                return box;
+                break;
+            }
         }
     }
 
@@ -564,7 +584,8 @@ var kerk = new function(){
             del = far*(factor || 0.02)*(floor || 0),
             off = {
                 x: x + del * Math.cos(ang),
-                y: y + del * Math.sin(ang)
+                y: y + del * Math.sin(ang),
+                scale: del
             };
             
         return off;

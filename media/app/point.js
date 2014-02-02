@@ -1,8 +1,8 @@
 kerk.point = function(option){
     kerk.add(this);
     
-    this.name   = option.name;
-    this.option = option;
+    this.name       = option.name;
+    this.gameObject = option;
     
     this.scripts = kerk.scriptsCreate(option.id,this);
     

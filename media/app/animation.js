@@ -7,6 +7,8 @@ kerk.animation = function(option){
     this.animationObject = option.animation;
     this.activeAnimate   = '';
     this.selectAnimID    = null;
+    this.selectScin      = {};
+    this.scinsID         = {};
     this.layers          = {};
     this.curentTime      = 0;
     this.boxSolid        = [];
@@ -54,6 +56,11 @@ kerk.animation = function(option){
             
             this.layers[i] = sprite;
         }
+        
+        for(var i in this.animationObject.scins){
+            this.scinsID[this.animationObject.scins[i].name] = i;
+            this.selectScin[i] = this.animationObject.scins[i].selectdDefault;
+        } 
     }
 }
 kerk.animation.prototype = {
@@ -65,6 +72,16 @@ kerk.animation.prototype = {
                 if(call) call(layer);
                 else return layer;
             } 
+        }
+    },
+    getPoints: function(call){
+        for(var i in this.animationObject.layers){
+            var point = this.animationObject.layers[i];
+            
+            if(point.type !== 'img'){
+                if(call) call(this.layers[i]);
+                else return this.layers[i];
+            }
         }
     },
     getBox: function(call){
@@ -97,6 +114,14 @@ kerk.animation.prototype = {
             }
             
             if(option.useAmount && this.selectAnimID) this.curentTime = this.selectAnimID.time * option.useAmount;
+        }
+    },
+    scin: function(name,visible){
+        var scinID = this.scinsID[name];
+        
+        if(scinID){
+            if(visible) this.selectScin[scinID] = 1;
+            else this.selectScin[scinID]        = 0;
         }
     },
     setActive: function(a){
@@ -153,6 +178,9 @@ kerk.animation.prototype = {
         
         if(this.activeAnimate){
             this.curentTime += delta;
+            
+            if(this.callTimeEnd && this.curentTime >= this.selectAnimID.time) this.callTimeEnd();
+            
             this.curentTime = this.curentTime >= this.selectAnimID.time ? (this.selectAnimID.loop ? 0 : this.selectAnimID.time) : this.curentTime;
         }
                     
@@ -191,7 +219,7 @@ kerk.animation.prototype = {
             
             sprite.scale.x = object.scaleX;
             sprite.scale.y = object.scaleY;
-            sprite.visible = object.visible;
+            sprite.visible = this.selectScin[object.scinSelect] ? object.visible : !object.scinSelect ? object.visible : 0;
             sprite.alpha   = object.opacity;
             
             var rotation = object.watchOfCursor ? ToMaxAngle(this.object.rotation,ToAngleObject(this.object,controller.sight),object.maxAngle): parent ? parent.rotation+ToRadian(object.rotation) : ToRadian(object.rotation)+this.object.rotation;

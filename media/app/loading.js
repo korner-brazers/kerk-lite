@@ -41,7 +41,7 @@ kerk.loading.prototype = {
             }
             
             loader.onComplete = function(){
-                scope.loadingZone();
+                scope.callback();
             }
             
             loader.load()

@@ -1,10 +1,10 @@
 kerk.emiter = function(option){
     kerk.add(this);
     
-    this.name     = option.name;
-    this.option   = option;
-    this.position = {x:option.x,y:option.y};
-    this.fxOption = {
+    this.name       = option.name;
+    this.gameObject = option;
+    this.position   = {x:option.x,y:option.y};
+    this.fxOption   = {
         id: option.fx,
         unitid: unitid,
         layer: option.parentLayer,

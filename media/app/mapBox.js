@@ -1,15 +1,18 @@
 kerk.mapBox = function(option){
     kerk.add(this);
     
-    this.name      = option.name;
-    this.option    = option;
-    this.boxOption = {
+    this.name       = option.name;
+    this.option     = option;
+    this.gameObject = option;
+    this.width      = option.w * option.scaleX;
+    this.height     = option.h * option.scaleY;
+    this.boxOption  = {
         position: {
             x: option.x,
             y: option.y
         },
-        width: option.w,
-        height: option.h,
+        width: this.width,
+        height: this.height,
         rotation: option.rotation,
         tag: option.tag,
         anchor: {
@@ -26,6 +29,20 @@ kerk.mapBox = function(option){
         object: this.boxOption,
         solid: option.solid
     })
+        
+    if(option.solid){
+        this.body = new kerk.box2D({
+            type: 'box',
+            width:  this.width,
+            height: this.height,
+            position: {
+                x: option.x,
+                y: option.y
+            }
+        })
+        
+        this.body.SetAngle(option.rotation)
+    }
     
     this.scripts = kerk.scriptsCreate(option.id,this);
     
@@ -36,7 +53,9 @@ kerk.mapBox.prototype = {
         kerk.scriptsSetAction('updateAction',this.scripts)
     },
     destroy: function(){
-        if(this.box) this.box.destroy();
+        this.box.destroy();
+        if(this.body) this.body.destroy();
+        
         kerk.scriptsSetAction('destroyAction',this.scripts)
         kerk.remove(this);
     }
