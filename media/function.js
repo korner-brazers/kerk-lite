@@ -57,7 +57,17 @@ Vector.prototype = {
  * Базовые функции
  * Используются в игре и в редакторе
  */
- 
+
+function parseGetParams() { 
+    var $_GET = {}; 
+    var __GET = window.location.search.substring(1).split("&"); 
+    for(var i=0; i<__GET.length; i++) {
+      var getVar = __GET[i].split("="); 
+      $_GET[getVar[0]] = typeof(getVar[1])=="undefined" ? "" : getVar[1]; 
+    } 
+    return $_GET; 
+}
+
 function randomColor() {
     var letters = '0123456789ABCDEF'.split(''),color = '';
     

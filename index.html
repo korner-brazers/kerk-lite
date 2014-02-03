@@ -22,6 +22,7 @@
 <script type="text/javascript" src="/media/BigScreen.js"></script>
 <script type="text/javascript" src="/media/font.js"></script>
 <script type="text/javascript" src="/media/particles.js"></script>
+<script type="text/javascript" src="/media/function.js"></script>
 
 <script src="/media/app/app.js"></script>
 <script src="/media/app/loading.js"></script>
@@ -57,15 +58,11 @@
 
 <script>
 /** Наши данные **/
-var unitid     = 0; //so.io id
-var viewer_id  = 0; //vk viewer_id
-var user_id    = 0;   //db user id
-var Profile    = Array;
+var GetParams  = parseGetParams();
+var unitid     = hash('_un');
 var LoadMap    = {};
-var auth_key   = '';
-var uhash      = '';
 var LoadAllMap = LoadObj.maps;
-var getTestMap = '';
+var getTestMap = GetParams.map;
 
 /** Основные настройки **/
 var settings = {
@@ -114,13 +111,12 @@ var clock      = new Clock();
         
     </div>
     
-<script type="text/javascript" src="media/function.js"></script>
-<script type="text/javascript" src="media/menu.js"></script>
+<script type="text/javascript" src="/media/menu.js"></script>
 
 <script type="text/javascript">
 
 if(window.location.protocol.substr(0, 4) === "file"){
-	alert("Игра не будет работать, пока вы не загрузите их на сайт!");
+	alert("Игра не будет работать, пока вы не загрузите игру на сайт!");
 }
 else{
     /** Создаем нашу игру **/
