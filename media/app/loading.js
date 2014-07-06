@@ -7,9 +7,7 @@ kerk.loading = function(callback){
 }
 kerk.loading.prototype = {
     parseAssets: function(a){
-        for(var i in LoadObj.sprite){
-            for(var s in LoadObj.sprite[i].frames) dataCache.loadingAssets.push(LoadObj.sprite[i].frames[s]);
-        } 
+        for(var i in LoadObj.tracers) dataCache.loadingAssets.push(LoadObj.tracers[i].image);
         
         if(LoadMap.object3D){
             for(var i in LoadMap.object3D){
@@ -45,29 +43,5 @@ kerk.loading.prototype = {
             }
             
             loader.load()
-    },
-    loadingZone: function(){
-        /** Пустой бейсик 100px на 100px если вдруг не сгенерирована карта **/
-        var base = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAABZUlEQVR4Xu3TQREAAAiEQK9/aWvsAxMw4O06ysAommCuINgTFKQgmAEMp4UUBDOA4bSQgmAGMJwWUhDMAIbTQgqCGcBwWkhBMAMYTgspCGYAw2khBcEMYDgtpCCYAQynhRQEM4DhtJCCYAYwnBZSEMwAhtNCCoIZwHBaSEEwAxhOCykIZgDDaSEFwQxgOC2kIJgBDKeFFAQzgOG0kIJgBjCcFlIQzACG00IKghnAcFpIQTADGE4LKQhmAMNpIQXBDGA4LaQgmAEMp4UUBDOA4bSQgmAGMJwWUhDMAIbTQgqCGcBwWkhBMAMYTgspCGYAw2khBcEMYDgtpCCYAQynhRQEM4DhtJCCYAYwnBZSEMwAhtNCCoIZwHBaSEEwAxhOCykIZgDDaSEFwQxgOC2kIJgBDKeFFAQzgOG0kIJgBjCcFlIQzACG00IKghnAcFpIQTADGE4LKQhmAMNpIQXBDGA4LQQL8oTPAGUY76lBAAAAAElFTkSuQmCC';
-        
-        dataCache.zoneLoading = {
-            wallGenerate: base,
-            groundGenerate: base,
-        };
-        
-        var scope = this;
-        
-        $.get( '/data/map/zone/'+kerk.option.map_id+'.base?'+random(9999,99999), function(j) {
-            try{
-                dataCache.zoneLoading = JSON.parse(j);
-            }
-            catch(e){
-                
-            }
-            
-            scope.callback();
-        }).fail(function() {
-            scope.callback();
-        })
     }
 }

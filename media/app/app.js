@@ -347,17 +347,25 @@ var kerk = new function(){
         /** Обновляем soundPack так как в кеше хранится все **/
         dataCache.soundPack = {};
         
-        new this.graphics();
-        
         this.globalScripts = this.scriptsCreate('runingGlobal');
         this.mapScripts = this.scriptsCreate(this.option.map_id);
         
         this.scriptsSetAction('startAction',this.globalScripts);
         this.scriptsSetAction('startAction',this.mapScripts);
         
+        new this.graphics();
+        
         this.cameraOption.overflow = LoadMap.overflow;
         
         world.SetGravity(new b2Vec2(0, LoadMap.gravitation !== undefined ?  LoadMap.gravitation : 30));
+    }
+    
+    this.layerID = function(name){
+        for(var i in LoadMap.layers){
+            var nameLayer = (LoadMap.layers[i].name || 'none').toLowerCase();
+            
+            if(nameLayer == name.toLowerCase()) return i;
+        }
     }
     
     this.collisionMap = function(position){

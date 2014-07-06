@@ -3,6 +3,10 @@ kerk.point = function(option){
     
     this.name       = option.name;
     this.gameObject = option;
+    this.position   = {
+        x: option.x,
+        y: option.y
+    }
     
     this.scripts = kerk.scriptsCreate(option.id,this);
     

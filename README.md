@@ -20,5 +20,3 @@ KerkEditor.exe
   Автор - korner-brazers
   
   Сайт  - (http://kerk.pw)
-  
-  Лицензия - (http://kerk.pw/tpl/display/engines)

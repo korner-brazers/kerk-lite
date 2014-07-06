@@ -176,6 +176,7 @@ function fixDigit(str){
 }
 
 function smooth(a,b,s,c){
+    return a + ((b - a) * (s*0.02));
     return a + ((b - a) * (s*(c ? focusDelta : delta)));
 }
 
