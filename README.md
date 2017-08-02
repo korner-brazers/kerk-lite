@@ -17,6 +17,6 @@ KerkEditor.exe
 
 ###Информация
 
-  Автор - korner-brazers
+  Автор - korner - (neoks)
   
   Сайт  - (http://kerk.pw)
